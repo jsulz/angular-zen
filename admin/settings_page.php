@@ -2,20 +2,20 @@
 //boilerplate for single site settings page
 //@todo - get logic for multisite!
 
-function plugin_name_register_settings_page() {
-	return new PLUGIN_SETTINGS_PAGE();
+function az_register_settings_page() {
+	return new AZ_SETTINGS_PAGE();
 }
 
-add_action('init', 'plugin_name_register_settings_page' );
+add_action('init', 'az_register_settings_page' );
 
 
-class PLUGIN_SETTINGS_PAGE {
+class AZ_SETTINGS_PAGE {
 
 	public function __construct() {
-		add_action( 'network_admin_menu', array( $this, 'plugin_settings_menu') );
+		add_action( 'network_admin_menu', array( $this, 'az_settings_menu') );
 	}
 
-	public function plugin_settings_menu() {
+	public function az_settings_menu() {
 
 		add_submenu_page(
 			'settings.php',

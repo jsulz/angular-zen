@@ -5,13 +5,13 @@
  * This function is hooked into the 'wp_dashboard_setup' action below.
  */
 
-function register_dashboard_widget() {
+function az_register_dashboard_widget() {
 
 	return new ANGULAR_ZEN_DASHBOARD_WIDGET();
 
 }
 
-add_action( 'init', 'register_dashboard_widget' );
+add_action( 'init', 'az_register_dashboard_widget' );
 
 class ANGULAR_ZEN_DASHBOARD_WIDGET {
 
@@ -34,7 +34,15 @@ class ANGULAR_ZEN_DASHBOARD_WIDGET {
 	function az_dashboard_widget_function() {
 
 		// Display whatever it is you want to show.
-		echo "Hello World, I'm a great Dashboard Widget";
+		?>
+			<div ng-app="azApp">
+				<div ng-controller="azHelpCenter">
+					<p>Hi {{name}}</p>
+				</div>
+			</div>
+
+
+		<?php
 	}
 
 }

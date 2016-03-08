@@ -1,15 +1,15 @@
 <?php
 
-function plugin_name_register_post_meta_box() {
+function az_register_post_meta_box() {
 
-	return new PLUGIN_POST_META_BOX();
+	return new AZ_POST_META_BOX();
 
 }
 
-add_action( 'admin_init', 'plugin_name_register_post_meta_box' );
+add_action( 'admin_init', 'az_register_post_meta_box' );
 
 
-class PLUGIN_POST_META_BOX {
+class AZ_POST_META_BOX {
 
 	public function __construct() {
 
