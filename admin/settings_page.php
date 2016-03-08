@@ -12,153 +12,140 @@ add_action('init', 'plugin_name_register_settings_page' );
 class PLUGIN_SETTINGS_PAGE {
 
 	public function __construct() {
-		add_action( 'admin_init', array( $this, 'plugin_settings_init') );
 		add_action( 'network_admin_menu', array( $this, 'plugin_settings_menu') );
 	}
 
 	public function plugin_settings_menu() {
 
-		add_options_page( 
-			'Plugin Settings Page Title', 
-			__( 'Plugin Menu Title', 'plugin-text-domain' ), 
-			'edit_posts', 
-			'plugin-boilerplate', 
-			array( $this, 'plugin_options_page_callback')
-			);
+		add_submenu_page(
+			'settings.php',
+			__('Angular Zen', 'az-domain'),
+			__('Angular Zen', 'az-domain'),
+			'manage_network',
+			'angular-zen',
+			array( $this, 'az_page_output')
+		);
 
 	}
 
-	public function plugin_settings_init() {
 
-		//register the settings group and the settings themselves
-		register_setting( 'plugin-boilerplate', 'plugin_settings' );
-		//create a settings section - there can be multiple settings sections, just make sure you attribute
-		//the settings fields to the sections you want
-		add_settings_section( 
-			'settings-section-id', 
-			__( 'Plugin Settings Section Title', 'plugin-text-domain'  ), 
-			array( $this, 'settings_section_callback' ), 
-			'plugin-boilerplate' );
-		//create the settings fields, associate them with the required settings sections
-		add_settings_field( 
-			'settings-fields-id', 
-			__('Settings Fields Title', 'plugin-text-domain' ), 
-			array( $this, 'settings_field_callback' ), 
-			'plugin-boilerplate', 
-			'settings-section-id' );
-		
-	}
+	function az_page_output() {
+	
+	if ( ! is_network_admin() ) { return FALSE; }
+	if ( ! is_super_admin() ) { return FALSE; }
+	if( ! current_user_can( 'manage_network' ) ) { return FALSE; }
 
-	public function settings_section_callback() {
-
-			echo __('<p>If we want some explanatory text for this section, this is where we would put it</p>', 'plugin-text-domain');
-
-
-	}
-
-	public function settings_field_callback() {
-
-		//just to make sure
-		if ( !current_user_can( 'edit_posts' ) ) {
-			$message = __( 'Sorry, you do not have sufficient permissions to edit this page', 'plugin-text-domain' );
-			wp_die( $message );
-		}
-
-		$settings = (array) get_option('plugin_settings');
-
-		if ( isset( $settings[ 'checkbox'] ) ) {
-			$checkbox = $settings[ 'checkbox'];
-		} else {
-			$checkbox ='';
-		}
-
-		if ( isset( $settings[ 'radio_button'] ) ) {
-			$radio_button = $settings['radio_button'];
-		} else {
-			$radio_button ='';
-		}
-
-		if ( isset( $settings[ 'textarea'] ) ) {
-			$textarea = esc_textarea( $settings['textarea'] );
-		} else {
-			$textarea ='';
-		}
-
-		if ( isset( $settings[ 'input_field'] ) ) {
-			$input_field = esc_attr( $settings['input_field'] );
-		} else {
-			$input_field ='';
-		}
-
-		if ( isset( $settings[ 'color'] ) ) {
-			$color = esc_attr( $settings['color'] );
-		} else {
-			$color ='';
-		}
-
-
+	$this->az_settings_updated();
+	
 		?>
 
-		<p>
-			<input type="checkbox" name="plugin_settings[checkbox]" value="1" <?php checked( $checkbox, 1 ); ?> />
-		</p>
-		<p>
-			<fieldset>
-				<input type="radio" id="value1" name="plugin_settings[radio_button]" value="Value 1" <?php checked( $radio_button, "Value 1" ); ?> />
-				<label for="value1">Value 1</label>
+			<div class="wrap">
+		
+				<?php
 
-				<input type="radio" id="value1" name="plugin_settings[radio_button]" value="Value 2" <?php checked( $radio_button, "Value 2" ); ?> />
-				<label for="value2">Value 2</label>
+					if( isset( $_GET[ 'action' ] ) ) {
 
-				<input type="radio" id="value1" name="plugin_settings[radio_button]" value="Value 3" <?php checked( $radio_button, "Value 3" ); ?> />
-				<label for="value2">Value 3</label>
-			</fieldset>
+						if( $_GET[ 'action' ] == 'process' ) {
 
-		</p>
-		<p>
-			<input type="text" name="plugin_settings[input_field]" value="<?php echo $input_field; ?>" />
-		</p>
-		<p>
-			<textarea name="plugin_settings[textarea]"><?php echo $textarea; ?></textarea>
-		</p>
-		<p>
-			<input type="text" name='plugin_settings[color]' value="<?php echo $color; ?>" class="my-color-field" />
-		</p>
+							$this->az_settings_update();
+
+							$this->az_settings_redirect();
+
+						}
+
+					}
+
+				?>
+					
+				<h2><?php _e('Angular Zen', 'az') ?></h2>
+				
+				<?php $this->az_settings_form(); ?>
+
+			</div>
 
 		<?php
 
 	}
 
-	public function plugin_options_page_callback() {
-		?>
-		<div class='wrap'>
+	function az_settings_update() {
 
-			<h2>Plugin Boilerplate Settings Page</h2>
-			<form action='options.php' method='POST'>
-				<?php 
+		$az_hc = $_POST['az_hc'];
 
-					//output the settings fields using the settings group registered in register_settings
-					settings_fields( 'plugin-boilerplate' );
+		if ( isset( $az_hc ) ) {
+			update_option( 'az_hc', $az_hc );
+		}
 
-				?>
-				<?php 
+		$az_api = $_POST['az_api'];
 
-					//output the settings sections using the options page slug to grab everything
-					//can optionally include individual sections here if needed
-					do_settings_sections( 'plugin-boilerplate' );
+		if ( isset( $az_api ) ) {
+			update_option( 'az_api', $az_api );
+		}
 
-				?>
-				<?php 
+	}
 
-					//output the submit button for the <form> element
-					submit_button( );
+	function az_settings_redirect() {
 
-				?>
+		$url = "settings.php?page=angular-zen&updated=true";
+
+		$out = "
+			<script>
+				window.location='$url';
+				console.log('$url');
+			</script>
+		";
+
+		echo $out;
+
+	}
+
+	function az_settings_updated() {
+
+		if ( ! isset( $_GET['updated'] ) ) { return FALSE; }
+		
+		$out = "<div id='message' class='updated fade'><p>Settings saved.</p></div>";
+		
+		echo $out;
+
+	}
+
+	function az_settings_form() {
+
+		$az_hc = get_option( 'az_hc' );
+
+		// The old version of this plugin used this string as a keyword to represent an empty value.
+		
+		$az_api = get_option( 'az_api' );
+
+		$out = "
+			<form method='post' action='settings.php?page=angular-zen&action=process'>
+				
+				<table class='form-table'>
+					<tr>
+						<th scope='row'>Zendesk Subdomain</th>
+						<td><p> Hi </p>
+							<input value='$az_hc' name='az_hc' type='text' class='widefat' placeholder='Enter the \"subdomain\" in subdomain.zendesk.com'>
+						</td>
+					</tr>
+					<tr>
+						<th scope='row'>Zendesk API Key</th>
+						<td>
+							<input value='$az_api' name='az_api' type='text' class='widefat' placeholder='Enter your API key'>
+						</td>
+					</tr>
+				</table>
+				
+				<p class='submit'>
+					<input type='submit' class='button button-primary' name='Submit' value='Save Changes'>
+				</p>
+				
 			</form>
 
-		</div>
-		<?php
+		";
+
+		echo $out;
+
 	}
+
 
 }
 
