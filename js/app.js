@@ -1,24 +1,33 @@
 angular.module('azApp', [ 'ngResource' ]);
 
-function azHelpCenter( $scope, helpCenter  ) {
+function azHelpCenter( $scope, $http  ) {
 
-	$scope.name = 'hi'
+	var el = document.getElementById('input');
+	el.addEventListener('keypress', function(e){
+		getZen(e);
+	});
 
-	helpCenter.query( function( res ){
-		$scope.content = res;
-		console.log(res);
-	})
+	function getZen(e) {
+		if ( e.target.value.length > 3 ) {
+			$http.get(azOpt.zdDomain + '/api/v2/help_center/articles/search.json?query=' + e.target.value)
+			.then( function(response){
+				$scope.answers = response.data.results;
+				console.log($scope.answers);
+			});
+		}
+	}
 
 }
 
 function helpCenter( $resource ) {
-	return $resource( azOpt.zdDomain + '/api/v2/help_center/articles/search.json?query=awesome');
+	console.log(azOpt.zdDomain);
+	return $resource( azOpt.zdDomain + '/api/v2/help_center/articles/search.json?query=');
 }
 
 
 angular
 	.module( 'azApp' )
-	.controller( 'azHelpCenter', [ '$scope', 'helpCenter', azHelpCenter ]);
+	.controller( 'azHelpCenter', [ '$scope', '$http', azHelpCenter ]);
 
 angular
 	.module( 'azApp' )

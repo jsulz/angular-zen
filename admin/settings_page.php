@@ -72,13 +72,17 @@ class AZ_SETTINGS_PAGE {
 		$az_hc = $_POST['az_hc'];
 
 		if ( isset( $az_hc ) ) {
-			update_option( 'az_hc', $az_hc );
+			update_site_option( 'az_hc', $az_hc );
+		} else {
+			add_site_option( 'az_hc', $az_hc );
 		}
 
 		$az_api = $_POST['az_api'];
 
 		if ( isset( $az_api ) ) {
-			update_option( 'az_api', $az_api );
+			update_site_option( 'az_api', $az_api );
+		} else {
+			add_site_option( 'az_api', $az_api );
 		}
 
 	}
@@ -110,11 +114,11 @@ class AZ_SETTINGS_PAGE {
 
 	function az_settings_form() {
 
-		$az_hc = get_option( 'az_hc' );
+		$az_hc = get_site_option( 'az_hc' );
 
 		// The old version of this plugin used this string as a keyword to represent an empty value.
 		
-		$az_api = get_option( 'az_api' );
+		$az_api = get_site_option( 'az_api' );
 
 		$out = "
 			<form method='post' action='settings.php?page=angular-zen&action=process'>

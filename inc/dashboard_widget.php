@@ -37,7 +37,10 @@ class ANGULAR_ZEN_DASHBOARD_WIDGET {
 		?>
 			<div ng-app="azApp">
 				<div ng-controller="azHelpCenter">
-					<p>Hi {{name}}</p>
+					<input id="input" type="text">
+					<ul ng-repeat="answer in answers">	
+						<li>{{ answer.title }}</li>
+					</ul>
 				</div>
 			</div>
 
